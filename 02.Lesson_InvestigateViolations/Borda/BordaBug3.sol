@@ -96,7 +96,7 @@ contract Borda is IBorda {
     }
 
     function voteTo(address contender, uint256 points) private {
-        uint256 contender_points = _contenders[contender].points + points;
+        uint256 contender_points = _contenders[contender].points.safeAdd(points); //@note normal addition will result in overflow with large numbers.
         _contenders[contender].points = contender_points;
         if (contender_points > pointsOfWinner) {
             winner = contender;

@@ -89,8 +89,8 @@ contract Borda is IBorda {
 
         _voters[msg.sender].voted = true;
         voteTo(first, 3);
-        voteTo(second, 3);
-        voteTo(third, 3);
+        voteTo(second, 2); //@note point should increase by 2 only for the second contender.
+        voteTo(third, 1); //@note point should increase by 2 only for the third contender.
         
         return true;
     }
