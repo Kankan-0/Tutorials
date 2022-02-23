@@ -9,6 +9,9 @@
 methods {
 	balanceOf(address) returns(uint256) envfree
 	allowance(address, address) returns(uint256) envfree
+	transfer(address, uint256) returns (bool)
+	transferFrom(address, address, uint256) returns (bool)
+	increaseAllowance(address, uint256) returns (bool)
 }
 
 // Checks that the sum of sender and recipient accounts remains the same after transfer(), i.e. assets doesn't disappear nor created out of thin air
