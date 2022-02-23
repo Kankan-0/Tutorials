@@ -1,0 +1,326 @@
+1. Q :-> When is p => q false? 
+
+(declare-const p Bool)
+(declare-const q Bool)
+(define-fun equivalence () Bool
+    (=> p q)
+)
+(assert (not equivalence))
+(check-sat)
+(get-model)
+
+Sol :-> p = true, q = false
+----------------------------------------------------------------
+----------------------------------------------------------------
+2. Q :-> When is p ⋁ q => p true/false ?
+
+(declare-const p Bool)
+(declare-const q Bool)
+(define-fun equivalence () Bool
+    (=> (or p q) p)
+)
+(assert equivalence)
+(check-sat)
+(get-model)
+
+Here, p = false, q = false, and the relation evaluates to true
+
+(declare-const p Bool)
+(declare-const q Bool)
+(define-fun equivalence () Bool
+    (=> (or p q) p)
+)
+(assert (not equivalence))
+(check-sat)
+(get-model)
+
+Here, p = false, q = true, and the relation evaluates to false
+
+Sol :-> the relation is true for some cases and false for some others.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+3. Q :-> When is (p ⋀ (q ⋁ ￢p)) ⋀ ￢q true/false ?
+
+(declare-const p Bool)
+(declare-const q Bool)
+(define-fun equivalence () Bool
+    (and (and (not q) p) (or (not p) q))
+)
+(assert (not equivalence))
+(check-sat)
+(get-model)
+
+Here p = false, q = false, and relation evaluates to false
+
+(declare-const p Bool)
+(declare-const q Bool)
+(define-fun equivalence () Bool
+    (and (and (not q) p) (or (not p) q))
+)
+(assert equivalence)
+(check-sat)
+(get-model)
+
+Here the solver returns unsat, which means there's no values of p and q for which the relation evaluates to true.
+
+Sol :-> Always false.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+4. Q :-> When is ￢(￢p ⋁ ￢q ⋁ ￢r) ⇔ p ⋀ q ⋀ r true/false ?
+
+(declare-const p Bool)
+(declare-const q Bool)
+(declare-const r Bool)
+(define-fun equivalence () Bool
+    (= (and p q r) (not (or (not p) (not q) (not r))))
+)
+(assert (not equivalence))
+(check-sat)
+(get-model)
+
+Sol :-> Here the solver returns unsat, which means the relation always evaluates to true.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+5. Q :-> When is ￢((￢p ⋁ q) ⋀ (p ⋁ ￢q) true/false ?
+
+(declare-const p Bool)
+(declare-const q Bool)
+(declare-const r Bool)
+(define-fun equivalence () Bool
+    (not (and (or p (not q))  (or (not p) q)))
+)
+(assert  equivalence)
+(check-sat)
+(get-model)
+
+Here with p = true, q = false, r = false, the relation evaluates to true
+
+(declare-const p Bool)
+(declare-const q Bool)
+(declare-const r Bool)
+(define-fun equivalence () Bool
+    (not (and (or p (not q))  (or (not p) q)))
+)
+(assert (not equivalence))
+(check-sat)
+(get-model)
+
+With p = q = r = false, the relation evaluates to false
+
+Sol :-> Sometime true, sometime false.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+6. Q :-> When is ￢((p ⋀ q) ⋁ (￢p ⋀ ￢q)) true/false ?
+
+(declare-const p Bool)
+(declare-const q Bool)
+(declare-const r Bool)
+(define-fun equivalence () Bool
+    (not (or (and (not p) (not q)) (and p q)))
+)
+(assert (not equivalence))
+(check-sat)
+(get-model)
+
+Relation is false for p = q= true, r = false
+
+(declare-const p Bool)
+(declare-const q Bool)
+(declare-const r Bool)
+(define-fun equivalence () Bool
+    (not (or (and (not p) (not q)) (and p q)))
+)
+(assert  equivalence)
+(check-sat)
+(get-model)
+
+Relation is true for p = true, q = r = false
+
+Sol :-> Sometime true sometime false.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+9. Q :-> When is (p => (q=>r) => ((p=>q) => r)) true/false ?
+
+(declare-const p Bool)
+(declare-const q Bool)
+(declare-const r Bool)
+(define-fun equivalence () Bool
+    (=> (=> p (=> q r)) (=> (=> p q) r))
+)
+(assert (not equivalence))
+(check-sat)
+(get-model)
+
+p = q = r = false, relation evaluates to false
+
+(declare-const p Bool)
+(declare-const q Bool)
+(declare-const r Bool)
+(define-fun equivalence () Bool
+    (=> (=> p (=> q r)) (=> (=> p q) r))
+)
+(assert equivalence)
+(check-sat)
+(get-model)
+
+p = q = false, r = true, relation evaluates to true
+
+Sol :-> Sometime true, sometime false.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+10. Q :-> When is ((p=>q) => r)) => (p => (q=>r)  true/false ?
+(declare-const p Bool)
+(declare-const q Bool)
+(declare-const r Bool)
+(define-fun equivalence () Bool
+    (=>  (=> (=> p q) r) (=> p (=> q r)))
+)
+(assert (not equivalence))
+(check-sat)
+(get-model)
+
+Fails to find a tuple for p, q ,r for which relation is false.
+Sol :-> Always true.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+7. Q :-> 
+Given the expression: M: p ⋁ ￢p
+Which of the following expressions implies the above given 
+expression M -:
+A) p ⋁ ￢p
+B) p ⋀ ￢p 
+C) (p ⋀ ￢p) ⋁ ￢p
+D) (￢p ⋁ p) ⋀ ￢p
+
+Sol :-> All the expression implies the given expression.
+A)
+(declare-const p Bool)
+(define-fun equivalence () Bool
+    (=> 
+        (or p (not p))
+        (or p (not p))
+    )
+)
+(assert (not equivalence))
+(check-sat)
+(get-model)
+
+always true. 
+
+B)
+(declare-const p Bool)
+(define-fun equivalence () Bool
+    (=> 
+        (and p (not p))
+        (or p (not p))
+    )
+)
+(assert (not equivalence))
+(check-sat)
+(get-model)
+
+always true.
+
+C)
+(declare-const p Bool)
+(define-fun equivalence () Bool
+    (=> 
+        (or (and p (not p)) (not p))
+        (or p (not p))
+    )
+)
+(assert (not equivalence))
+(check-sat)
+(get-model)
+
+always true.
+
+D)
+(declare-const p Bool)
+(define-fun equivalence () Bool
+    (=> 
+        (and (or p (not p)) (not p))
+        (or p (not p))
+    )
+)
+(assert (not equivalence))
+(check-sat)
+(get-model)
+
+always true. 
+
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+8. Q :-> 
+Given the expression: M: p ⋀ ￢p
+Which of the following expressions are implied by the above 
+given expression M :
+A) p ⋁ ￢p
+B) p ⋀ ￢p 
+C) (p ⋀ ￢q) ⋁ ￢r
+D) (￢p ⋁ p) ⋀ ￢p
+
+Sol :-> All expressions are implied by the given one
+
+A) 
+(declare-const p Bool)
+(define-fun equivalence () Bool
+    (=> 
+        (and p (not p))
+        (or p (not p))
+    )
+)
+(assert (not equivalence))
+(check-sat)
+(get-model)
+
+always true
+
+B) 
+(declare-const p Bool)
+(define-fun equivalence () Bool
+    (=> 
+        (and p (not p))
+        (and p (not p))
+    )
+)
+(assert (not equivalence))
+(check-sat)
+(get-model)
+
+Always true
+
+C)
+(declare-const p Bool)
+(declare-const q Bool)
+(declare-const r Bool)
+(define-fun equivalence () Bool
+    (=> 
+        (and p (not p))
+        (or (and p (not q)) (not r))
+    )
+)
+(assert (not equivalence))
+(check-sat)
+(get-model)
+
+Always true
+
+D)
+(declare-const p Bool)
+(declare-const q Bool)
+(declare-const r Bool)
+(define-fun equivalence () Bool
+    (=> 
+        (and p (not p))
+        (and (or p (not p)) (not p))
+    )
+)
+(assert (not equivalence))
+(check-sat)
+(get-model)
+
+Always true.
+

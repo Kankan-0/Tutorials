@@ -1,0 +1,32 @@
+1. Q :->  
+  a + a = 10
+  a * b + a = 12
+  a * b - c * a = a
+  c = ?
+
+(declare-const a Int)
+(declare-const b Int)
+(declare-const c Int)
+(assert (= 10 (+ a a)))
+(assert (= 12 (+ (* a b ) b)))
+(assert (= a (- (* a b) (* a c) )))
+(check-sat)
+(get-model)
+
+Sol :-> a = 5, b = 2, c = 1
+
+2. Q :-> 
+  Are the following two equivalent? 
+  (p ^ q) <=> p 
+  p => q
+
+(declare-const p Bool)
+(declare-const q Bool)
+(define-fun equivalence () Bool
+    (= (=> p q) (= p (and p q)))
+)
+(assert (not equivalence))
+(check-sat)
+
+Sol :-> Both are equivalent
+
