@@ -21,13 +21,19 @@ methods {
 	getStateById(uint256) returns(uint8) envfree
 	getNumOfParticipents(uint256) returns (uint256) envfree
 	scheduleMeeting(uint256, uint256, uint256)
+
+	getOrganizer(uint256) returns (address) envfree
+	startMeeting(uint256)
+	cancelMeeting(uint256)
+	endMeeting(uint256)
+	joinMeeting(uint256) envfree
 }
 
-definition meetingUninitialized(uint256 meetingId) returns bool = getStartTimeById(meetingId) == 0 && getEndTimeById(meetingId) == 0 && getStateById(meetingId) == 0;
-definition meetingPending(uint256 meetingId) returns bool = getStartTimeById(meetingId) != 0 && getStartTimeById(meetingId) < getEndTimeById(meetingId) && getStateById(meetingId) == 1;
-definition meetingStarted(uint256 meetingId, uint256 currentTime) returns bool = getStartTimeById(meetingId) <= currentTime && getEndTimeById(meetingId) > currentTime && getStateById(meetingId) == 2;
-definition meetingEnded(uint256 meetingId, uint256 currentTime) returns bool = getStartTimeById(meetingId) < currentTime && getEndTimeById(meetingId) <= currentTime && getStateById(meetingId) == 3;
-definition meetingCanceled(uint256 meetingId) returns bool = getStartTimeById(meetingId) != 0 && getStartTimeById(meetingId) < getEndTimeById(meetingId) && getStateById(meetingId) == 4;
+definition meetingUninitialized(uint256 meetingId) returns bool = getStartTimeById(meetingId) == 0 && getEndTimeById(meetingId) == 0 && getStateById(meetingId) == 0 && getNumOfParticipents(meetingId) == 0 && getOrganizer(meetingId) == 0;
+definition meetingPending(uint256 meetingId) returns bool = getStartTimeById(meetingId) != 0 && getStartTimeById(meetingId) < getEndTimeById(meetingId) && getStateById(meetingId) == 1 && getNumOfParticipents(meetingId) == 0 && getOrganizer(meetingId) != 0;
+definition meetingStarted(uint256 meetingId, env e) returns bool = getStartTimeById(meetingId) <= e.block.timestamp && getEndTimeById(meetingId) > getStartTimeById(meetingId) && getOrganizer(meetingId) != 0 && getStateById(meetingId) == 2;
+definition meetingEnded(uint256 meetingId, env e) returns bool = getStartTimeById(meetingId) < e.block.timestamp && getEndTimeById(meetingId) <= e.block.timestamp && getEndTimeById(meetingId) > getStartTimeById(meetingId) && getOrganizer(meetingId) != 0 && getStateById(meetingId) == 3;
+definition meetingCanceled(uint256 meetingId) returns bool = getStartTimeById(meetingId) != 0 && getStartTimeById(meetingId) < getEndTimeById(meetingId) && getStateById(meetingId) == 4 && getNumOfParticipents(meetingId) == 0;
 
 // Checks that when a meeting is created, the planned end time is greater than the End time
 rule startBeforeEnd(method f, uint256 meetingId, uint256 startTime, uint256 endTime) {

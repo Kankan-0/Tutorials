@@ -3,28 +3,44 @@ methods {
     getPointsOfContender(address) returns(uint256) envfree
     getFullContenderDetails(address) returns(uint8, bool, uint256) envfree 
     registerVoter(uint8) returns (bool)
+
+    hasVoted(address) returns (bool) envfree
+    getWinner() returns (address, uint256) envfree
+    registerContender(uint8) returns (bool)
+    vote(address, address, address) returns(bool)
 }
 
-definition unRegisteredVoter(address voter) returns bool = !getVoterRegistrationStatus(voter);
-definition registeredYetVotedVoter(address voter) returns bool = getVoterRegistrationStatus(voter) && !getVoterVoted(voter);
-definition legitRegisteredVotedVoter(address voter) returns bool = getVoterRegistrationStatus(voter) && getVoterVoted(voter) && !getVoterVoteBlocked(voter);
-definition getVoterBlocked(address voter) returns bool = getVoterRegistrationStatus(voter) && getVoterVoted(voter) && getVoterVoteBlocked(voter);
+definition unRegisteredVoter(address voter) returns bool =  !getVoterRegistrationStatus(voter) && getVoterAge(voter) == 0 && getVoterVoteAttempts(voter) == 0 && !getVoterVoteBlocked(voter) && !getVoterVoted(voter);
+definition registeredYetVotedVoter(address voter) returns bool = getVoterRegistrationStatus(voter) && !getVoterVoted(voter) && getVoterVoteAttempts(voter) == 0 && !getVoterVoteBlocked(voter);
+definition legitRegisteredVotedVoter(address voter) returns bool = getVoterRegistrationStatus(voter) && getVoterVoted(voter) && !getVoterVoteBlocked(voter) && 0 < getVoterVoteAttempts(voter) && getVoterVoteAttempts(voter) < 3;
+definition getVoterBlocked(address voter) returns bool = getVoterRegistrationStatus(voter) && getVoterVoted(voter) && getVoterVoteBlocked(voter) &&  getVoterVoteAttempts(voter) >= 3;
 
+
+function getVoterAge(address voter) returns uint8 {
+    uint8 age; bool voterReg; bool voted; uint256 vote_attempts; bool blocked;
+    age, voterReg, voted, vote_attempts, blocked = getFullVoterDetails(voter);
+    return age;
+}
+function getVoterVoteAttempts(address voter) returns uint256 {
+    uint8 age; bool voterReg; bool voted; uint256 vote_attempts; bool blocked;
+    age, voterReg, voted, vote_attempts, blocked = getFullVoterDetails(voter);
+    return vote_attempts;
+}
 
 function getVoterRegistrationStatus(address voter) returns bool {
-    uint256 age; bool voterReg; bool voted; uint256 vote_attempts; bool blocked;
+    uint8 age; bool voterReg; bool voted; uint256 vote_attempts; bool blocked;
     age, voterReg, voted, vote_attempts, blocked = getFullVoterDetails(voter);
     return voterReg;
 }
 
 function getVoterVoteBlocked(address voter) returns bool {
-    uint256 age; bool voterReg; bool voted; uint256 vote_attempts; bool blocked;
+    uint8 age; bool voterReg; bool voted; uint256 vote_attempts; bool blocked;
     age, voterReg, voted, vote_attempts, blocked = getFullVoterDetails(voter);
     return blocked;
 }
 
 function getVoterVoted(address voter) returns bool {
-    uint256 age; bool voterReg; bool voted; uint256 vote_attempts; bool blocked;
+    uint8 age; bool voterReg; bool voted; uint256 vote_attempts; bool blocked;
     age, voterReg, voted, vote_attempts, blocked = getFullVoterDetails(voter);
     return voted;
 }
@@ -35,7 +51,7 @@ function getVoterVoted(address voter) returns bool {
 // If it's true after a function call, it either started as true or changed from false to true via registerVoter()
 rule registeredCannotChangeOnceSet(method f, address voter){
     env e; calldataarg args;
-    uint256 age; bool voterRegBefore; bool voted; uint256 vote_attempts; bool blocked;
+    uint8 age; bool voterRegBefore; bool voted; uint256 vote_attempts; bool blocked;
     // age, voterRegBefore, voted, vote_attempts, blocked = getFullVoterDetails( voter);
     voterRegBefore = getVoterRegistrationStatus(voter);
     f(e, args);
@@ -70,7 +86,7 @@ rule correctPointsIncreaseToContenders(address first, address second, address th
 // Checks that a blocked voter cannot get unlisted
 rule onceBlockedNotOut(method f, address voter){
     env e; calldataarg args;
-    uint256 age; bool registeredBefore; bool voted; uint256 vote_attempts; bool blocked_before;
+    uint8 age; bool registeredBefore; bool voted; uint256 vote_attempts; bool blocked_before;
     // age, registeredBefore, voted, vote_attempts, blocked_before = getFullVoterDetails(voter);
     registeredBefore = getVoterRegistrationStatus(voter);
     blocked_before = getVoterVoteBlocked(voter);

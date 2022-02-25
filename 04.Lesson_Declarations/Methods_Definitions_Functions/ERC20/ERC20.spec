@@ -12,6 +12,13 @@ methods {
 	transfer(address, uint256) returns (bool)
 	transferFrom(address, address, uint256) returns (bool)
 	increaseAllowance(address, uint256) returns (bool)
+
+	name() returns (string) envfree
+	symbol() returns (string) envfree
+	decimals() returns (uint8) envfree
+	totalSupply() returns (uint256) envfree
+	approve(address, uint256) returns (bool)
+	decreaseAllowance(address, uint256) returns(bool)
 }
 
 // Checks that the sum of sender and recipient accounts remains the same after transfer(), i.e. assets doesn't disappear nor created out of thin air
