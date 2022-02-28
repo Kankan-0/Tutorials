@@ -42,4 +42,4 @@
 - Property 6 is high priority as changing an owner is not desirable.
 
 ### Low Priority:
-- Property 7 is low priority since it is fairly simple to check by other means, including by manual reviewing of the code.
+- Property 8 is low priority since it is fairly simple to check by other means, including by manual reviewing of the code.

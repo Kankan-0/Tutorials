@@ -51,7 +51,7 @@ rule cannotEndPrematurely(method f, uint256 meetingId) {
   require stateBefore != 3;
   f(e,args);
   uint8 stateAfter = getStateById(meetingId);
-  assert (stateAfter == 3 => endTime <= e.block.timestamp, "Ended a meeting which was not started");
+  assert (stateAfter == 3 => endTime <= e.block.timestamp, "Ended a meeting before end time");
 }
 
 // Checks that a meeting can be cancelled by only organizer.
@@ -63,7 +63,7 @@ rule ownerCanCancel(method f, uint256 meetingId) {
   f(e,args);
   uint8 stateAfter = getStateById(meetingId);
   address organizer = getOrganizer(meetingId);
-  assert (stateAfter == 4 => getOrganizer(meetingId) == e.msg.sender, "Ended a meeting which was not started");
+  assert (stateAfter == 4 => getOrganizer(meetingId) == e.msg.sender, "cancelled a meeting by someone other then organizer");
 }
 
 // Checks that state can not transition from PENDING to ENDED.
