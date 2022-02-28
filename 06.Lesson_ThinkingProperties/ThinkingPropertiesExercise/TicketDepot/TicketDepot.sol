@@ -27,7 +27,7 @@ contract TicketDepot {
 		transactionFee = _transactionFee;  
 		owner = tx.origin;
         numEvents = 0;
-	} 
+	}
 
     // creates an event with the specified number of tickets and price for sale
 	function createEvent(uint64 _ticketPrice, uint16 _ticketsAvailable) public returns (uint16 eventID){         
@@ -88,4 +88,22 @@ contract TicketDepot {
 			delete offerings[offerID];  
 	} 
 
+
+	// added to help write the spec
+	function getNumEvents() external view returns(uint16) {
+		return numEvents;
+	}
+	function getTicketsLeft(uint16 eventId) external view returns(uint16) {
+		return eventsMap[eventId].ticketsRemaining;
+	}
+
+	function getTicketOwner(uint16 eventId, uint16 ticketId) external view returns(address) {
+		return eventsMap[eventId].attendees[ticketId];
+	}
+
+	function getTicketInfo(uint16 eventId, uint16 ticketId) external view returns(uint256, uint64, address) {
+		bytes32 offerID = keccak256(abi.encode(eventId,ticketId));
+		return (offerings[offerID].deadline, offerings[offerID].price, offerings[offerID].buyer) ;
+	}
 } 
+

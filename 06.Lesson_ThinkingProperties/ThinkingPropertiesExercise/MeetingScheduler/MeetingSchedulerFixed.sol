@@ -116,4 +116,9 @@ contract MeetingScheduler is IMeetingScheduler {
         );
         meetings[meetingId].numOfParticipents++;
     }
+
+    // added to help writing the spec.
+    function getOrganizer(uint256 meetingId) external view returns(address) {
+        return meetings[meetingId].organizer;
+    }
 }
