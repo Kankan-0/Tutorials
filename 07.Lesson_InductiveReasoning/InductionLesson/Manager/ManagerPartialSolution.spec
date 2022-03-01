@@ -8,8 +8,11 @@ methods {
 
 rule uniqueManager(uint256 fundId1, uint256 fundId2, method f) {
 	require fundId1 != fundId2;
-	require getCurrentManager(fundId1) != 0 && isActiveManager(getCurrentManager(fundId1));
-	require getCurrentManager(fundId2) != 0 && isActiveManager(getCurrentManager(fundId2));
+	// modifying preConditions only fails for other scenarios also
+	// modifying both will correctly catch the bug
+	// modifying postconditions only will fail to find the bug.
+	require getCurrentManager(fundId1) != 0 => isActiveManager(getCurrentManager(fundId1));
+	require getCurrentManager(fundId2) != 0 => isActiveManager(getCurrentManager(fundId2));
 	require getCurrentManager(fundId1) != getCurrentManager(fundId2) ;
 				
 	env e;
@@ -24,8 +27,8 @@ rule uniqueManager(uint256 fundId1, uint256 fundId2, method f) {
 		f(e,args);
 	}
 	assert getCurrentManager(fundId1) != getCurrentManager(fundId2), "managers not different";
-	assert getCurrentManager(fundId1) != 0 && isActiveManager(getCurrentManager(fundId1)), "manager of fund1 is not active";
-	assert getCurrentManager(fundId2) != 0 && isActiveManager(getCurrentManager(fundId2)), "manager of fund2 is not active";
+	assert getCurrentManager(fundId1) != 0 => isActiveManager(getCurrentManager(fundId1)), "manager of fund1 is not active";
+	assert getCurrentManager(fundId2) != 0 => isActiveManager(getCurrentManager(fundId2)), "manager of fund2 is not active";
 }
 
 
