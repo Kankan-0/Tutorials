@@ -26,6 +26,24 @@ invariant balanceRatios(address account1, address account2)
         (( balanceOf(account1) + balanceOf(account2) == 0 ) =>
             totalSupply() + balanceOf(account1) >= balanceOf(account2) )
 
+// Running the following rules we get to know that all the invariants are tautologies.
+// rule twoBalancesGreaterThanSingleRule(address account1, address account2) {
+
+//    assert balanceOf(account1) + balanceOf(account2) < balanceOf(account1) => false;
+// }
+
+// rule twoBalancesGreaterThanSingleProbRule(address account1, address account2) {
+
+//    assert balanceOf(account1) + balanceOf(account2) <= balanceOf(account1) + balanceOf(account2);
+// }
+
+// rule balanceRatiosRule(address account1, address account2) {
+
+//     assert (totalSupply() == balanceOf(account1) + balanceOf(account2) =>
+//         (( balanceOf(account1) + balanceOf(account2) == 0 ) =>
+//             totalSupply() + balanceOf(account1) >= balanceOf(account2) ));
+// }
+
 /* 
  * Try to think about how we can check if this rule is a tautology.
  * It is not as simple as copying the assert to a rule.
@@ -57,6 +75,8 @@ rule transferOutDoesNotChangePowerBalance(address user1, address user2, address 
     uint256 balance2_ = balanceOf(user2);
 
     assert balance1_ < balance2_;
+    // using this we can know that this rule is vacuous.
+    // assert false;
 }
 
 /* Hint: 
